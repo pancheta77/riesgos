@@ -11,12 +11,35 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'PagesController@home');
 
-Route::get('home', function(){
-  return view ('admin.dashboard');
+Route::group([
+  'prefix' => 'admin',
+  'namespace' => 'Admin',
+  'middleware' => 'auth'],
+function(){
+  // Rutas de administracion - dashboard
+  Route::get('/', 'AdminController@index')->name('admin.dashboard');
+  // Rutas para las empresas
+  Route::get('empresas', 'EmpresaController@index')->name('admin.empresas.index');
+  Route::get('empresas/{empresa}', 'EmpresaController@analisis')->name('admin.analisis');
+  Route::get('matriz', 'EmpresaController@matriz')->name('admin.empresas.matriz');
+  // Rutas para los activos
+  Route::get('activos/{empresa}', 'ActivosController@show')->name('admin.activos.show');
+  Route::get('activos/{empresa}/create', 'ActivosController@create')->name('admin.activos.create');
+  Route::post('activos', 'ActivosController@store')->name('admin.activos.store');
+
+  // Rutas para las amenazas
+  Route::get('amenazas/{activo}', 'AmenazasController@show')->name('admin.amenazas.show');
+  Route::get('amenazas/{activo}/create', 'AmenazasController@create')->name('admin.amenazas.create');
+  Route::post('amenazas', 'AmenazasController@store')->name('admin.amenazas.store');
+  Route::get('amenazas/{activo}/edit/{amenaza}', 'AmenazasController@edit');
+  Route::put('amenazas/{amenaza}', 'AmenazasController@update')->name('admin.amenazas.update');
+  // Rutas para las medidas
+  Route::get('medidas/{amenaza}', 'MedidasController@show')->name('admin.medidas.show');
+  Route::get('medidas/{amenaza}/create', 'MedidasController@create')->name('admin.medidas.create');
+  Route::post('medidas', 'MedidasController@store')->name('admin.medidas.store');
+
 });
 
 // Authentication Routes...
